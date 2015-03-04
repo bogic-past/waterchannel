@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softserveinc.if052_restful.mappers.UserMapper">
+
+    <!-- Result map for representation of user with addresses -->
+    <resultMap id="UserResult" type="User">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="surname" column="surname"/>
+        <result property="middleName" column="middle_name"/>
+        <result property="login" column="login"/>
+        <result property="password" column="password"/>
+        <collection property="addresses" column="user_id"
+                    javaType="ArrayList" ofType="Address"
+                    resultMap="com.softserveinc.if052_restful.mappers.AddressMapper.AddressSimpleResult">
+        </collection>
+    </resultMap>
+
+    <!-- Result map for representation of user -->
+    <resultMap id="UserSimpleResult" type="User">
+        <id property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="surname" column="surname"/>
+        <result property="middleName" column="middle_name"/>
+        <result property="login" column="login"/>
+        <result property="password" column="password"/>
+    </resultMap>
+
+    <select id="getUserByLogin" parameterType="String" resultMap="UserSimpleResult">
+        SELECT
+        c.user_id,
+        c.name,
+        c.surname,
+        c.middle_name,
+        c.login,
+        c.password
+        FROM consumer c
+        WHERE c.login = #{login}
+    </select>
+
+    <select id="getUserById" parameterType="int" resultMap="UserResult">
+        SELECT
+        c.user_id,
+        c.name,
+        c.surname,
+        c.middle_name,
+        c.login,
+        c.password,
+        a.city,
+        a.street,
+        a.building,
+        a.apartment,
+        a.tariff,
+        a.user_id
+        FROM consumer c LEFT OUTER JOIN address a ON c.user_id = a.user_id
+        WHERE c.user_id = #{userId}
+    </select>
+
+    <select id="getAllUsers" resultMap="UserResult">
+        SELECT
+        c.user_id,
+        c.name,
+        c.surname,
+        c.middle_name,
+        c.login,
+        c.password
+        FROM consumer c
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO consumer (name, surname, middle_name, login, password)
+        VALUES( #{name}, #{surname}, #{middleName}, #{login}, #{password})
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE consumer
+        SET
+        name = #{name},
+        surname = #{surname},
+        middle_name = #{middleName},
+        login = #{login},
+        password = #{password}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM consumer WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softserveinc.if052_restful.mappers.WaterMeterMapper">
+
+    <!-- Result map for representation of water meter with indicators -->
+    <resultMap id="WaterMeterResult" type="WaterMeter">
+        <id property="waterMeterId" column="water_meter_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <association property="address" javaType="Address"
+                     resultMap="com.softserveinc.if052_restful.mappers.AddressMapper.AddressSimpleResult"/>
+        <collection property="indicators" column="water_meter_id"
+                    javaType="ArrayList" ofType="Indicator"
+                    resultMap="com.softserveinc.if052_restful.mappers.IndicatorMapper.IndicatorSimpleResult"/>
+    </resultMap>
+
+    <!-- Result map for representation of water meter -->
+    <resultMap id="WaterMeterSimpleResult" type="WaterMeter">
+        <id property="waterMeterId" column="water_meter_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <select id="getWaterMeterById" parameterType="int" resultMap="WaterMeterResult">
+        SELECT
+        wm.water_meter_id,
+        wm.name,
+        wm.description,
+        i.indicator_id,
+        i.date,
+        i.value,
+        i.is_paid,
+        i.is_published,
+        a.address_id,
+        a.city,
+        a.street,
+        a.building,
+        a.apartment
+        FROM watermeter wm
+        LEFT OUTER JOIN indicator i on wm.water_meter_id = i.water_meter_id
+        LEFT OUTER JOIN address a on wm.address_id = a.address_id
+        WHERE wm.water_meter_id = #{waterMeterId}
+    </select>
+
+    <select id="getWaterMetersByAddressId" parameterType="int" resultMap="WaterMeterSimpleResult">
+        SELECT
+        wm.water_meter_id,
+        wm.name,
+        wm.description
+        FROM watermeter wm
+        LEFT OUTER JOIN address a on wm.address_id = a.address_id
+        WHERE a.address_id = #{addressId}
+    </select>
+
+    <select id="getAllWaterMeters" resultMap="WaterMeterSimpleResult">
+        SELECT
+        wm.water_meter_id,
+        wm.name,
+        wm.description
+        FROM watermeter wm
+    </select>
+
+    <insert id="insertWaterMeter" parameterType="WaterMeter" useGeneratedKeys="true" keyProperty="waterMeterId">
+        INSERT INTO watermeter(name, description, address_id)
+        VALUES(#{name}, #{description}, #{address.addressId})
+    </insert>
+
+    <update id="updateWaterMeter" parameterType="WaterMeter">
+        UPDATE watermeter
+        SET
+        name = #{name},
+        description = #{description},
+        address_id = #{address.addressId}
+        WHERE water_meter_id = #{waterMeterId}
+    </update>
+
+    <delete id="deleteWaterMeter" parameterType="int">
+        DELETE FROM watermeter WHERE water_meter_id = #{waterMeterId}
+    </delete>
+
+</mapper>
