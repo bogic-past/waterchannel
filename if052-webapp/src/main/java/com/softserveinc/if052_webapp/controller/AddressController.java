@@ -33,7 +33,7 @@ public class AddressController {
      * @return "address" JSP for showing 
      */
     @RequestMapping(value = "/addresses{userId}")
-    public String getAddressPage(Integer userId, ModelMap model){
+    public String getAddressPage(int userId, ModelMap model){
         this.userId = String.valueOf(userId);
         RestTemplate restTemplate = new RestTemplate();
 

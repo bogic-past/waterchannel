@@ -12,6 +12,7 @@
     <packaging>war</packaging>
     <name>if052-restful-service Maven Webapp</name>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.13.RELEASE</spring.version>
         <jersey.version>2.15</jersey.version>
     </properties>
@@ -166,7 +167,7 @@
                     <path>/${build.finalName}</path> <!-- mvn tomcat7:deploy (redeploy / undeploy ) -->
                 </configuration>
             </plugin>
-            <!--for heroku-->
+            <!--for heroku
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -208,7 +209,7 @@
                     <jdkVersion>1.7</jdkVersion>
                 </configuration>
             </plugin>
-            <!--for heroku-->
+            for heroku-->
         </plugins>
     </build>
     <repositories>

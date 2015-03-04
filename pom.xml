@@ -8,10 +8,14 @@
     <artifactId>wc-project</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <modules>
         <module>if052-restful-service</module>
         <module>if052-webapp</module>
     </modules>
-
 
 </project>
