@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>wc-project</artifactId>
         <groupId>wc</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>if052-webapp</artifactId>
     <packaging>war</packaging>
-    <name>if052-webapp Maven Webapp</name>
+    <name>if052-webapp</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.13.RELEASE</spring.version>
@@ -146,7 +146,7 @@
                     <path>/${build.finalName}</path> <!-- mvn tomcat7:deploy (redeploy / undeploy ) -->
                 </configuration>
             </plugin>
-            <!--for heroku
+            <!--for heroku-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -188,7 +188,7 @@
                     <jdkVersion>1.7</jdkVersion>
                 </configuration>
             </plugin>
-            for heroku-->
+            <!--for heroku-->
         </plugins>
     </build>
 
