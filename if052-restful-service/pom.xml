@@ -11,6 +11,7 @@
     <artifactId>if052-restful-service</artifactId>
     <packaging>war</packaging>
     <name>if052-restful-service</name>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring.version>3.2.13.RELEASE</spring.version>
@@ -23,7 +24,9 @@
             <artifactId>spring-hateoas</artifactId>
             <version>0.16.0.RELEASE</version>
         </dependency>
-        <dependency> <!-- Spring framework dependencies -->
+
+        <!-- Spring -->
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
@@ -54,12 +57,15 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+
+        <!-- Servlet -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
         </dependency>
-        <!-- Hibernate Validator -->
+
+        <!-- JSR-303 validation -->
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
@@ -70,12 +76,16 @@
             <artifactId>hibernate-validator</artifactId>
             <version>5.0.1.Final</version>
         </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- MyBatis -->
         <dependency> <!-- MyBatis -->
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
@@ -86,6 +96,7 @@
             <artifactId>mybatis-spring</artifactId>
             <version>1.2.2</version>
         </dependency>
+
         <!-- Jersey -->
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
@@ -97,11 +108,14 @@
             <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        <dependency> <!-- Jackson JSON providers -->
+
+        <!-- Jackson JSON providers -->
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+
         <!-- these 2 dependencies are neeeded for successful tests run -->
         <dependency>
             <groupId>javax.el</groupId>
@@ -113,6 +127,8 @@
             <artifactId>javax.el</artifactId>
             <version>2.2.4</version>
         </dependency>
+
+        <!-- Logging -->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -141,7 +157,7 @@
                     <path>/${build.finalName}</path> <!-- mvn tomcat7:deploy (redeploy / undeploy ) -->
                 </configuration>
             </plugin>
-            <!--for heroku
+            <!--for heroku-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -183,25 +199,23 @@
                     <jdkVersion>1.7</jdkVersion>
                 </configuration>
             </plugin>
-            for heroku-->
+            <!--for heroku-->
         </plugins>
     </build>
-
     <profiles>
         <profile>
             <id>test</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
-            <!-- Need for connection to H2 DB only -->
             <dependencies>
+                <!-- H2 DB -->
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                     <version>1.3.171</version>
                 </dependency>
             </dependencies>
-
             <build>
                 <plugins>
                     <plugin>
@@ -221,12 +235,13 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <dependencies>
-                <dependency> <!-- dataSource -->
+                <!-- Database Connection Pooling -->
+                <dependency>
                     <groupId>commons-dbcp</groupId>
                     <artifactId>commons-dbcp</artifactId>
                     <version>1.4</version>
                 </dependency>
-                <!-- Need for connection to PostgreSQL DB only -->
+                <!-- PostgreSQL -->
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
@@ -247,7 +262,6 @@
             </build>
         </profile>
     </profiles>
-
     <repositories>
         <repository>
             <id>spring-releases</id>

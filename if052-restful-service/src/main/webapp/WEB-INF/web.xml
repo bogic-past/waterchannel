@@ -6,10 +6,10 @@
     <display-name>if-052 Restful Application</display-name>
 
     <context-param>
+        <param-name>spring.profiles.active</param-name>
         <!-- Spring profile parameter
         First profile: h2 - use H2 DB
         Second profile: psql - use PostgreSQL DB -->
-        <param-name>spring.profiles.active</param-name>
         <param-value>psql</param-value>
     </context-param>
 

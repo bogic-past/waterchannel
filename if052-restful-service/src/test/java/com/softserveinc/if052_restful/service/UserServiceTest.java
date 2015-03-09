@@ -9,14 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:applicationContext.xml")
+@ContextConfiguration(locations={"classpath:applicationContext.xml",
+                                 "classpath:h2-datasource.xml"})
 @ActiveProfiles(profiles = "h2")
 public class UserServiceTest {
-
     @Autowired
     private UserService userService;
 
@@ -55,7 +54,6 @@ public class UserServiceTest {
 
     @Test
     public void testInsertUser() {
-
         long generateOrigin = System.currentTimeMillis();
 
         User user = new User();
