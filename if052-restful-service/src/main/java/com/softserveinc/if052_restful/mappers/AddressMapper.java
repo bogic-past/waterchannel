@@ -5,7 +5,7 @@
 package com.softserveinc.if052_restful.mappers;
 
 import java.util.List;
-import com.softserveinc.if052_restful.domain.Address;
+import com.softserveinc.if052_core.domain.Address;
 
 /**
  * This interface is for the "ADDRESS" mapper
@@ -33,20 +33,12 @@ public interface AddressMapper {
 	public Address getAddressById(int addressId);
 	
 	/**
-	 * Select all addresses
-	 * 
-	 * @return List of addresses
-	 * 
-	 */
-	public List<Address> getAllAddresses();
-	
-	/**
 	 * Select all addresses (zero or more) of user
 	 * 
 	 * @param userId
 	 * @return List of addresses
 	 */
-	public List < Address > getAddressesByUserId(int userId);
+	public List<Address> getAddressesByUserId(int userId);
 	
 	/**
 	 * Update existing address of user

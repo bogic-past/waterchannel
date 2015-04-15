@@ -9,31 +9,66 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<link rel="stylesheet" href="<c:url value="/resources/css/graphs.css"/>"/>
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
-        <div>
+        <div class="body">
             <div id="container" class="graphs-size"></div>
+            <div id="error" class="error">${error}</div>
         
-            <c:url var="drawByMonth" value="/graphByMonth" />
+            <c:url var="drawByMonth" value="/graphByOption" />
 
             <div id="chooseMonth" class = "check-box">
-                <form:form >
-                        Please choose an option :
+                <form:form action="${drawByMonth}">
+                <sec:csrfInput/>
+                        Виберіть опцію :
+                    <select name="month"  >
+                        <option value="-1">Виберіть місяць</option>
+                        <option value="1">Січень</option>
+                        <option value="2">Лютий</option>
+                        <option value="3">Березень</option>
+                        <option value="4">Квітень</option>
+                        <option value="5">Травень</option>
+                        <option value="6">Червень</option>
+                        <option value="7">Липень</option>
+                        <option value="8">Серпень</option>
+                        <option value="9">Вересень</option>
+                        <option value="10">Жовтень</option>
+                        <option value="11">Листопад</option>
+                        <option value="12">Грудень</option>
+                    </select>
+                    <select name="year">
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                    </select>
+                    <select id="address" >
+                        <option value="" >Виберіть адресу</option>
+                        <c:forEach items="${addresses}" var="address">
+                            <option value="${address.addressId}">${address.street}</option>
+                        </c:forEach>
+                    </select>
+                    
+                    <select id="waterMeter" name="meter">
+                        
+                    </select>
+
                         <div>
-                            <button id = 'submit' type="submit" name="draw" >Draw</button>
+                            <button id = 'submit' type="submit" name="draw" >Змоделювати</button>
                         </div>
                     </div>
                 </form:form>
-            <script src="/resources/js/jquery-1.9.1.js" type="text/javascript"></script>
-            <script src="/resources/js/highcharts/highcharts.js" type="text/javascript"></script>
-            <script src="/resources/js/highcharts/exporting.js" type="text/javascript"></script>
-            <script type="text/javascript">
-                var indicators = ${indicatorsData}
-            </script>
-            <script src="/resources/js/highcharts/graphs.js"></script>
         </div>
+        <script src="/resources/js/highcharts/highcharts.js" type="text/javascript"></script>
+        <script src="/resources/js/highcharts/exporting.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            var indicatorsData = ${indicatorsData}
+            var year = '${year}'
+            var meterName = '${meterName}'
+            var meterType = '${meterType}'
+            
+        </script>
+        <script src="/resources/js/highcharts/graphs.js"></script>
     </tiles:putAttribute>
 </tiles:insertDefinition>
 

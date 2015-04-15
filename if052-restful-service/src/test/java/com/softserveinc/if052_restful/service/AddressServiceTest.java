@@ -1,25 +1,57 @@
 package com.softserveinc.if052_restful.service;
 
-import com.softserveinc.if052_restful.domain.Address;
-import com.softserveinc.if052_restful.domain.WaterMeter;
+import com.softserveinc.if052_core.domain.Address;
+import com.softserveinc.if052_core.domain.WaterMeter;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import static org.easymock.EasyMock.createMock;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:applicationContext.xml",
-                                 "classpath:h2-datasource.xml"})
-@ActiveProfiles(profiles = "h2")
+@ContextConfiguration(locations={"classpath*:context.xml"})
 public class AddressServiceTest {
     @Autowired
     private AddressService addressService;
     @Autowired
     private UserService userService;
+
+
+    private static Logger LOGGER = Logger.getLogger(AddressServiceTest.class);
+
+    @BeforeClass
+    public static void setAuth(){
+        Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                "1", "PASS1111", authorities);
+        HttpServletRequest request = new MockHttpServletRequest();
+
+        token.setDetails(new WebAuthenticationDetails(request));
+
+        LOGGER.debug("Logging in with " + token.getPrincipal().toString());
+        SecurityContextHolder.getContext().setAuthentication(token);
+        LOGGER.debug(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        LOGGER.debug(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    }
 
     @Test
     public void testGetAddressById() {
@@ -51,6 +83,7 @@ public class AddressServiceTest {
         }
     }
 
+
     @Test
     public void testInsertAddress() {
         long generateOrigin = System.currentTimeMillis();
@@ -59,7 +92,6 @@ public class AddressServiceTest {
         address.setStreet("Сахарова");
         address.setBuilding("23");
         address.setApartment("503");
-        address.setTariff( generateOrigin / 1000000000 );
         address.setUser(userService.getUserById(1));
         addressService.insertAddress(address);
 
@@ -75,13 +107,13 @@ public class AddressServiceTest {
         Assert.assertEquals(address.getStreet(), createdAddress.getStreet());
         Assert.assertEquals(address.getBuilding(), createdAddress.getBuilding());
         Assert.assertEquals(address.getApartment(), createdAddress.getApartment());
-        Assert.assertEquals(address.getTariff(), createdAddress.getTariff(), 0.0001);
         Assert.assertEquals(address.getUser().getUserId(), createdAddress.getUser().getUserId());
     }
 
     @Test
     public void testUpdateAddress() {
         // searching of last record id for update
+//        setAuth();
         List<Address> addresses = addressService.getAllAddresses();
         int lastId = addresses.get(addresses.size() - 1).getAddressId();
 
@@ -90,7 +122,6 @@ public class AddressServiceTest {
         address.setStreet("Садова");
         address.setBuilding("2а");
         address.setApartment("1");
-        address.setTariff(50);
         addressService.updateAddress(address);
         Address updatedAddress = addressService.getAddressById(lastId);
 
@@ -98,7 +129,6 @@ public class AddressServiceTest {
         Assert.assertEquals(address.getStreet(), updatedAddress.getStreet());
         Assert.assertEquals(address.getBuilding(), updatedAddress.getBuilding());
         Assert.assertEquals(address.getApartment(), updatedAddress.getApartment());
-        Assert.assertEquals(address.getTariff(), updatedAddress.getTariff(), 0.1);
     }
 
     @Test
@@ -108,7 +138,6 @@ public class AddressServiceTest {
         address.setStreet("Сахарова");
         address.setBuilding("23");
         address.setApartment("503");
-        address.setTariff(0.23);
         address.setUser(userService.getUserById(1));
         addressService.insertAddress(address);
 

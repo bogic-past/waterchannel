@@ -4,26 +4,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Water Consumption Tracker</title>
+    <title>Consumption Tracker</title>
 
-    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/tiles.css"/>"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/dataTables.bootstrap.css"/>"/>
     <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/bootstrap.min.css"/>"/>
-    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/jquery-ui.css"/>"/>
     <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/pace.css"/>"/>
-    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/jquery.dataTables_themeroller.css"/>"/>
-    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/jquery.dataTables.min.css"/>"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/jquery-ui.css"/>"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/jquery.css"/>"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/tiles.css"/>"/>
+    <link type="text/css" rel="stylesheet" href="<c:url value="/resources/css/graphs.css"/>"/>
 
-    <script type="text/javascript" src="<c:url value="/resources/js/pace.min.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery.js"/>"></script>
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery.dataTables.min.js"/>"></script>
-    <script>
-        $(document).ready(function() {
-            $('#paginated').dataTable({
-                "lengthMenu":[ [5, 10, 15, 25, -1], [5, 10, 15, 25, "All"]],
-                "info":     false
-            });
-        });
-    </script>
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.js"/>"></script>
+
 </head>
 <body>
 <div class="page">
@@ -31,13 +23,22 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-lg-2" id="body-left"></div>
-                <div class = "col-lg-8" id="body-center"><tiles:insertAttribute name="body"/></div>
-                <div class="col-lg-2" id="body-right"></div>
+                <div class="col-md-2">
+                    <tiles:insertAttribute name="popups"/>
+                </div>
+                <div class ="col-md-8">
+                    <tiles:insertAttribute name="body"/>
+                    <tiles:insertAttribute name="footer"/>
+                </div>
+                <div class="col-md-2"></div>
             </div>
         </div>
     </div>
-    <tiles:insertAttribute name="footer"/>
 </div>
 </body>
+
+<script type="text/javascript" src="<c:url value="/resources/js/pace.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+
+
 </html>

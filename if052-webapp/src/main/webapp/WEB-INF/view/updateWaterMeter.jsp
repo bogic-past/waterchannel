@@ -10,36 +10,42 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
         <div class="body">
 
-        <h1> UPDATE FORM WILL BE HERE </h1>
+        <h2> Редагування даних лічильника </h2>
 
 <c:url var="updateUrl" value="/updateWaterMeter"/>
 
             <form:form
                     action="${updateUrl}" method="post" modelAttribute="waterMeter">
+                <sec:csrfInput/>
                 <table class="box-table-a">
-                    <caption> Update Water Meter</caption>
                     <thead>
                     <tr>
-                        <th> Name </th>
-                        <th> Description </th>
+                        <th>Назва</th>
+                        <th>Опис</th>
+                        <th>Тариф</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
                             <input type="hidden" name="waterMeterId" value="${waterMeter.waterMeterId}"/>
-                            <input type="text" name="name" value="${waterMeter.name}"/>
+                            <input type="text" class="form-control" name="name" value="${waterMeter.name}"/>
                         </td>
-                        <td> <input type="text" name="description" value="${waterMeter.description}"/></td>
+                        <td> <input type="text" class="form-control" name="description" value="${waterMeter.description}"/></td>
                         <td>
-                            <button class="add-button" type="submit">update</button>
+                            <input type="number" class="form-control" step="0.01" name="tariff" value="${waterMeter.tariff}"/>
+                        </td>
+                        <td>
+                            <button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            </button>
                         </td>
                     </tr>
                     </tbody>

@@ -1,20 +1,20 @@
 package com.softserveinc.if052_restful.service;
 
-import com.softserveinc.if052_restful.domain.Address;
-import com.softserveinc.if052_restful.domain.User;
+import com.softserveinc.if052_core.domain.Address;
+import com.softserveinc.if052_core.domain.Indicator;
+import com.softserveinc.if052_core.domain.User;
+import com.softserveinc.if052_core.domain.WaterMeter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"classpath:applicationContext.xml",
-                                 "classpath:h2-datasource.xml"})
-@ActiveProfiles(profiles = "h2")
+@ContextConfiguration(locations={"classpath*:context.xml"})
 public class UserServiceTest {
     @Autowired
     private UserService userService;
@@ -62,6 +62,7 @@ public class UserServiceTest {
         user.setMiddleName("middle_name" + generateOrigin);
         user.setLogin("login" + generateOrigin);
         user.setPassword("password" + generateOrigin);
+        user.setEmail("email" + generateOrigin + "@i.ua");
 
         userService.insertUser(user);
 
@@ -75,6 +76,7 @@ public class UserServiceTest {
         Assert.assertEquals(user.getMiddleName(), createdUser.getMiddleName());
         Assert.assertEquals(user.getLogin(), createdUser.getLogin());
         Assert.assertEquals(user.getPassword(), createdUser.getPassword());
+        Assert.assertEquals(user.getEmail(), createdUser.getEmail());
     }
 
     @Test
@@ -86,6 +88,7 @@ public class UserServiceTest {
         user.setMiddleName("YA");
         user.setLogin("55555");
         user.setPassword("1111");
+        user.setEmail("origin@mail.ru");
 
         userService.updateUser(user);
 
@@ -108,4 +111,39 @@ public class UserServiceTest {
         User deletedUser = userService.getUserById(lastElement);
         Assert.assertNull(deletedUser);
     }
+
+    @Test
+    public void testGetAllReportUsers() {
+
+        Assert.assertNotNull(userService.getAllReportUsers());
+
+        for(User u : userService.getAllReportUsers()) {
+            System.out.println(u);
+            for(Address a : u.getAddresses()) {
+                System.out.println(a);
+                for(WaterMeter wm : a.getWaterMeters()) {
+                    System.out.println(wm);System.out.println(wm.getIndicators());
+                    for(Indicator i : wm.getIndicators()) {
+                        System.out.println(i);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testReportUserByLogin() {
+        Assert.assertNotNull(userService.getReportUserByLogin(("LOGIN111")));
+        System.out.println(userService.getReportUserByLogin("LOGIN111"));
+    }
+
+    @Test
+    public void testGetLogins() {
+        List<String> logins = userService.getLogins();
+        Assert.assertNotNull(logins);
+        for(String str : logins) {
+            System.out.println(str);
+        }
+    }
+
 }

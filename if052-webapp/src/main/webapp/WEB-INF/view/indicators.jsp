@@ -10,6 +10,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
@@ -17,22 +18,45 @@
 
             <div class="container">
 
-                <table class="table table-hover" id="paginated">
+                <a href="<c:url value='/watermeter?addressId=${waterMeter.address.addressId}'/>"
+                            class="btn btn-default"  role="button">
+                    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                    Назад
+                </a>
+
+                <table class="table table-hover" cellspacing="0" width="100%"
+                       <c:if test="${indicators.size()!=0}">id="paginated"</c:if> >
 
                     <thead>
+                    <h4>Показники лічильника: ${waterMeter.name}
+                        <c:if test="${waterMeter.description !=null && waterMeter.description !=''}">, ${waterMeter.description} </c:if></h4>
                     <tr>
                         <th>Дата</th>
-                        <th>Значення</th>
-                        <th>Оплачено</th>
-                        <th>Опубліковано</th>
+                        <th>Показник</th>
+                        <th>Тариф</th>
+                        <th>Вартість</th>
+                        <th title="Оплачено">Опл.</th>
+                        <th title="Опубліковано">Опубл.</th>
                         <th>Дії</th>
                     </tr>
                     </thead>
                     <tbody>
+                    <%--We use "previousValue" to calculate a subtraction of two indicators--%>
+                    <c:set var="previousValue" value="0"/>
                     <c:forEach var="indicator" items="${indicators}">
                         <tr>
-                            <td><fmt:formatDate value="${indicator.date}" pattern="MM/dd/yyyy" /></td>
+                            <td>
+                                <span style='display:none'><%--this is for proper sorting by date --%>
+                                     <fmt:formatDate value="${indicator.date}" pattern="yyyy.MM.dd" />
+                                </span>
+                                <fmt:formatDate value="${indicator.date}" pattern="dd-MM-yyyy" />
+                            </td>
                             <td><c:out value="${indicator.value}"/></td>
+                            <td><c:out value="${indicator.tariffPerDate}"/></td>
+                            <td><fmt:formatNumber type="number" maxFractionDigits="3"
+                                                  value="${(indicator.value - previousValue)*indicator.tariffPerDate}"/>
+                                грн.
+                            </td>
                             <td>
                                     <span <c:if test="${indicator.paid}">class="glyphicon glyphicon-ok" </c:if>
                                           <c:if test="${!indicator.paid}">class="glyphicon glyphicon-minus" </c:if>
@@ -46,18 +70,17 @@
                                     </span>
                             </td>
                             <td>
-                                <a href="<c:url value="/deleteIndicator?indicatorId=${indicator.indicatorId}"/>">
-                                    <button <c:if test="${indicator.published}">disabled="disabled"</c:if> >
-                                        DELETE
-                                    </button>
+                                <a href="<c:url value="/updateIndicator?indicatorId=${indicator.indicatorId}"/>"
+                                        class="btn btn-default <c:if test='${indicator.published}'>disabled</c:if>"  role="button">
+                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 </a>
-                                <a href="<c:url value="/updateIndicator?indicatorId=${indicator.indicatorId}"/>">
-                                    <button <c:if test="${indicator.published}">disabled="disabled"</c:if> >
-                                        UPDATE
-                                    </button>
+                                <a href="<c:url value="/deleteIndicator?indicatorId=${indicator.indicatorId}"/>"
+                                   class="btn btn-default <c:if test='${indicator.published}'>disabled</c:if>"  role="button">
+                                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                                 </a>
                             </td>
                         </tr>
+                        <c:set var="previousValue" value="${indicator.value}"/>
                     </c:forEach>
                     </tbody>
                 </table>
@@ -66,37 +89,38 @@
             <div class="container" >
                 <c:url var="addUrl" value="/addIndicator"/>
                 <form:form action="${addUrl}" method="post" modelAttribute="indicator">
+                    <sec:csrfInput/>
                     <table class="box-table-a">
                         <caption> Додати показник </caption>
                         <thead>
-                        <tr>
-                            <th>Дата</th>
-                            <th>Значення</th>
-                            <th>Оплачено</th>
-                        </tr>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Показник</th>
+                                <th>Оплачено</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>
-                                <script src="<c:url value="/resources/js/jquery-ui.js"/>" type="text/javascript"></script>
-                                <script type="text/javascript">
-                                    $(function() {
-                                        $( "#datepicker" ).datepicker();
-                                    });
-                                </script>
-                                <input type="text" id="datepicker" name="date" value="<fmt:formatDate value='${currentDate}' pattern='MM/dd/yyyy' />" />
-                            </td>
-                            <td><input type="number" step="1" name="value" value="0"/></td>
-                            <td><input type="checkbox" name="paid" /></td>
-                            <td>
-                                <button class="add-button" type="submit">Add</button>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td><input class="form-control" type="text" id="datepicker" name="dateStr"/></td>
+                                <td><input class="form-control" type="number" step="1"
+                                           name="value" value="${indicators.size()!=0 ? indicators.get(indicators.size()-1).value : 0}"/></td>
+                                <td><input class="checkbox" type="checkbox" name="paid" /></td>
+                                <td>
+                                    <button class="btn btn-default" type="submit">
+                                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                    </button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </form:form>
             </div>
-
         </div>
+
+        <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui-i18n.min.js'/>"></script>
+        <script type="text/javascript" src="<c:url value="/resources/js/jquery/jquery.dataTables.min.js"/>"></script>
+        <script type="text/javascript" src="<c:url value="/resources/js/jquery/dataTables.bootstrap.js"/>"></script>
+        <script type="text/javascript" src="<c:url value="/resources/js/indicators.js"/>"></script>
     </tiles:putAttribute>
 </tiles:insertDefinition>

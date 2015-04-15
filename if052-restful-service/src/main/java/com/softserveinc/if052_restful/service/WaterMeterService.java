@@ -3,9 +3,10 @@
  */
 package com.softserveinc.if052_restful.service;
 
-import com.softserveinc.if052_restful.domain.WaterMeter;
+import com.softserveinc.if052_core.domain.WaterMeter;
 import com.softserveinc.if052_restful.mappers.WaterMeterMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * Service for work with water meter
- * @see com.softserveinc.if052_restful.domain.WaterMeter
+ * @see com.softserveinc.if052_core.domain.WaterMeter
  *
  * @version 1.0
  */
@@ -70,7 +71,23 @@ public class WaterMeterService {
         waterMeterMapper.deleteWaterMeter(waterMeterId);
     }
 
+    /**
+     * Get all meters by address id
+     * 
+     * @param addressId
+     * @return
+     */
     public List<WaterMeter> getWaterMetersByAddressId(int addressId) {
         return waterMeterMapper.getWaterMetersByAddressId(addressId);
+    }
+
+    /**
+     * Get first meter by userId
+     *
+     * @return
+     */
+    public WaterMeter getFirstMeter(){
+        Integer userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        return waterMeterMapper.getFirstMeterByUserId(userId);
     }
 }

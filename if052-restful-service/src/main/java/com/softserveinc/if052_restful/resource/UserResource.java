@@ -1,114 +1,141 @@
 package com.softserveinc.if052_restful.resource;
 
-import com.softserveinc.if052_restful.domain.User;
+import com.softserveinc.if052_core.domain.User;
 import com.softserveinc.if052_restful.service.UserService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
  * Created by valentyn on 2/11/15.
  */
-
-@Path("/users")
+@RequestMapping("/rest/users")
+@RestController
 public class UserResource {
     @Autowired
     UserService userService;
 
-    @GET @Path("/list")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getAddresses() {
-        List< User > users = userService.getAllUsers();
-        return Response.status(Response.Status.OK).entity(users).build();
-    }
+    private static Logger LOGGER = Logger.getLogger(UserResource.class.getName());
 
-    @GET
-    @Path("/{userId}")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getUser(@PathParam("userId") int userId) {
-        User user = userService.getUserById(userId);
-
-        return Response.status(Response.Status.OK).entity(user).build();
-    }
-
-    @GET
-    @Path("login/{login}")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getUser(@PathParam("login") String login) {
-        try {
-            User user = userService.getUserByLogin(login);
     
-            if (user == null ) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            return Response.status(Response.Status.OK).entity(user).build();
-        }
-        catch (ConstraintViolationException e){
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-        catch (Exception e){
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
+    @RequestMapping(value="/list", method = RequestMethod.GET, produces = "application/json")
+    public List<User> getAddresses() {
+        LOGGER.info("INFO: Searching for the whole collection of users.");
+        List<User> users = userService.getAllUsers();
+        LOGGER.info("INFO: The whole collection of users has been found.");
+        return users;
     }
 
-    @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response createUser(
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    public User getUser(HttpServletResponse response) {
+        User user = userService.getCurrentUser();
+
+        if (user == null){
+            LOGGER.info("INFO: Requested user has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        LOGGER.info("INFO: User with requested id " + user.getUserId() + " has been found.");
+        return user;
+    }
+
+    @RequestMapping(value = "login/{login}", method = RequestMethod.GET, produces = "application/json")
+    public User getUser(@PathVariable("login") String login, HttpServletResponse response) {
+        LOGGER.info("INFO: Searching for the user with login" + login);
+        User user = userService.getUserByLogin(login);
+
+        if (user == null ) {
+            LOGGER.info("INFO: User with requested login " + login + " has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        LOGGER.info("INFO: User with requested login " + login + " has been found.");
+
+        return user;
+    }
+
+    @RequestMapping(value = "/logins", method = RequestMethod.GET, produces = "application/json")
+    public List<String> getLogins() {
+        LOGGER.info("INFO: Searching for the whole collection of users login");
+        List<String> logins = userService.getLogins();
+        LOGGER.info("INFO: The whole collection of users login has been found.");
+        return logins;
+    }
+
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
+    public User createUser(
         @Valid
-        User user ){
+        @RequestBody
+        User user, HttpServletResponse response ){
+
         try {
+            LOGGER.info("INFO: Adding a new user.");
             userService.insertUser(user);
-
-            return Response.status(Response.Status.CREATED).entity(user).build();
+            LOGGER.info("INFO: User has been successfully added with id " + user.getUserId() + ".");
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            return user;
         }
         catch (ConstraintViolationException e){
-
-            return Response.status(Response.Status.FORBIDDEN).build();
-        } 
+            LOGGER.info("INFO: Invalid users data.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
         catch (Exception e) {
-
-             return Response.status(Response.Status.FORBIDDEN).build();
+            LOGGER.info("INFO: Internal error");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
         }
     }
 
-    @PUT @Path("{userId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response updateUser(
-        @PathParam("userId") int userId,
-        @Valid
-        User user){
+    @RequestMapping(value="{userId}", method = RequestMethod.PUT)
+    public User updateUser(@PathVariable("userId") int userId, @Valid @RequestBody User user,
+                           HttpServletResponse response){
+        if (userService.getUserById(userId) == null) {
+            LOGGER.info("INFO: User with requested id " + userId + " is not found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
         try {
+            LOGGER.info("INFO: Updating a user with id " + userId + ".");
             userService.updateUser(user);
+            LOGGER.info("INFO: User with id " + userId + " has been successfully updated.");
+            return user;
 
-            return Response.status(Response.Status.OK).build();
         }
         catch (ConstraintViolationException e){
-
-            return Response.status(Response.Status.FORBIDDEN).build();
+            LOGGER.info("INFO: Invalid users data.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
         }
         catch (Exception e) {
-
-            return Response.status(Response.Status.FORBIDDEN).build();
+            LOGGER.info("INFO: Internal error");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return null;
         }
     }
 
-    @DELETE
-    @Path("{userId}")
-    public Response deleteUser(
-        @PathParam("userId") int  userId
+    @RequestMapping(value = "{userId}", method = RequestMethod.DELETE, produces = "application/json")
+    public void deleteUser(
+        @PathVariable("userId") int  userId,
+        HttpServletResponse response
     ){
+        if(userService.getUserById(userId) == null){
+            LOGGER.info("INFO: User with requested id " + userId + " is not found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else
         try {
+            LOGGER.info("INFO: Deleting a user with id " + userId + ".");
             userService.deleteUser(userId);
-
-            return Response.status(Response.Status.OK).build();
+            LOGGER.info("INFO : User with id " + userId + " has been successfully deleted.");
         }
         catch (Exception e){
-
-            return Response.status(Response.Status.FORBIDDEN).build();
+            LOGGER.info("INFO: Internal error");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-    } 
+    }
 }

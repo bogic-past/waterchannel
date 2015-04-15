@@ -3,7 +3,7 @@
  */
 package com.softserveinc.if052_restful.mappers;
 
-import com.softserveinc.if052_restful.domain.User;
+import com.softserveinc.if052_core.domain.User;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public interface UserMapper {
      *
      * @return List of user
      */
-    public List < User > getAllUsers();
+    public List<User> getAllUsers();
 
     /**
      * Get user by login 
@@ -57,5 +57,15 @@ public interface UserMapper {
      * @param UserId
      */
     public void deleteUser(int UserId);
+
+    public List<User> getAllReportUsers();
+
+    public User getReportUserByLogin(String login);
+
+    public List<String> getLogins();
+
+    public User getAuthByLogin(String login);
+
+    public User getAuth(Integer userId);
 
 }

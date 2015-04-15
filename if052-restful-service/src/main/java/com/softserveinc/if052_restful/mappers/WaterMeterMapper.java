@@ -3,7 +3,7 @@
  */
 package com.softserveinc.if052_restful.mappers;
 
-import com.softserveinc.if052_restful.domain.WaterMeter;
+import com.softserveinc.if052_core.domain.WaterMeter;
 import java.util.List;
 
 /**
@@ -51,6 +51,14 @@ public interface WaterMeterMapper {
      */
     public void deleteWaterMeter(int waterMeterId);
 
-    public List<WaterMeter> getWaterMetersByAddressId(int addressId);
+    /**
+     * Get all meters by address Id
+     * 
+     * @param addressId
+     * @return
+     */
+    public List < WaterMeter > getWaterMetersByAddressId(int addressId);
+
+    public WaterMeter getFirstMeterByUserId(int userId);
 
 }

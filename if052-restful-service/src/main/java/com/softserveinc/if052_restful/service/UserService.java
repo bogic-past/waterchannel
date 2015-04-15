@@ -3,9 +3,10 @@
  */
 package com.softserveinc.if052_restful.service;
 
-import com.softserveinc.if052_restful.domain.User;
+import com.softserveinc.if052_core.domain.User;
 import com.softserveinc.if052_restful.mappers.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 /**
  * Service for work with User.
- * @see com.softserveinc.if052_restful.domain.User
+ * @see com.softserveinc.if052_core.domain.User
  *
  * @version 1.0
  */
@@ -33,6 +34,11 @@ public class UserService {
         return userMapper.getUserById(userId);
     }
 
+    public User getCurrentUser() {
+        Integer userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        return userMapper.getUserById(userId);
+    }
+
     /**
      * Get exists user by id
      *
@@ -48,7 +54,7 @@ public class UserService {
      * 
      * @return List of users
      */
-    public List < User > getAllUsers() {
+    public List<User> getAllUsers() {
         return userMapper.getAllUsers();
     }
 
@@ -77,5 +83,17 @@ public class UserService {
      */
     public void deleteUser(int userId) {
         userMapper.deleteUser(userId);
+    }
+
+    public List<User> getAllReportUsers() {
+        return userMapper.getAllReportUsers();
+    }
+
+    public User getReportUserByLogin(String login) {
+        return userMapper.getReportUserByLogin(login);
+    }
+
+    public List<String> getLogins() {
+        return userMapper.getLogins();
     }
 }

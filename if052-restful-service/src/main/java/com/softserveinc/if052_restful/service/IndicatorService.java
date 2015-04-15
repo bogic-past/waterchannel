@@ -1,12 +1,14 @@
 package com.softserveinc.if052_restful.service;
 
-import com.softserveinc.if052_restful.domain.Indicator;
-import com.softserveinc.if052_restful.domain.WaterMeter;
+import com.softserveinc.if052_core.domain.Indicator;
+import com.softserveinc.if052_core.domain.WaterMeter;
 import com.softserveinc.if052_restful.mappers.IndicatorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,8 +28,8 @@ public class IndicatorService {
         return indicatorMapper.getAllIndicators();
     }
 
-    public List<Indicator> getIndicatorsByWaterMeter(WaterMeter waterMeter) {
-        return indicatorMapper.getIndicatorsByWaterMeter(waterMeter.getWaterMeterId());
+    public List<Indicator> getIndicatorsByMeterId(int meterId) {
+        return indicatorMapper.getIndicatorsByMeterId(meterId);
     }
 
     public void insertIndicator(Indicator indicator) {
@@ -40,6 +42,33 @@ public class IndicatorService {
 
     public void deleteIndicator(int indicatorId) {
             indicatorMapper.deleteIndicator(indicatorId);
+    }
+
+    public Date getMinDate() {
+        return indicatorMapper.getMinDate();
+    }
+
+    public Date getMaxDate() {
+        return indicatorMapper.getMaxDate();
+    }
+
+    /**
+     * Get indicators by year
+     *
+     * @param waterMeterId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public List<Indicator> getIndicatorsByDates(int waterMeterId,
+                                                  String startDate,
+                                                  String endDate) {
+        return indicatorMapper.getIndicatorsByDates(waterMeterId, startDate, endDate);
+    }
+
+    public List<Indicator> getIndicatorsForUser(int number){
+        Integer userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        return indicatorMapper.getIndicatorsByUserId(userId, number);
     }
 }
 

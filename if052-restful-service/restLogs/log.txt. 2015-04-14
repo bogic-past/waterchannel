@@ -1,0 +1,20 @@
+INFO: Searching for the indicators of user with id 1.
+INFO: The collection of indicators has been found for the user with id 1.
+INFO: Searching for the indicator with id 1.
+INFO: Indicator with requested id 1 has been successfully found.
+INFO: Searching for the collection of indicators by meter with id 4.
+INFO: The collection of indicators has been found for meter with id 4.
+INFO: Searching for the indicators by year 2015.
+INFO: The collection of indicators has been found for the year 2015.
+INFO: Searching for the indicators since 2015-01-01 00:00:00 till 2015-12-31 23:59:59.
+INFO: The collection of indicators since 2015-01-01 00:00:00 till 2015-12-31 23:59:59 has been successfully found.
+INFO: Searching for the indicator with id 1.
+INFO: Indicator with requested id 1 has been successfully found.
+INFO: Searching for the indicators for current user .
+INFO: The collection of indicators for the current user has been found
+INFO: Searching for the collection of indicators by meter with id 4.
+INFO: The collection of indicators has been found for meter with id 4.
+INFO: Searching for the indicators by year 2015.
+INFO: The collection of indicators has been found for the year 2015.
+INFO: Searching for the indicators since 2015-01-01 00:00:00 till 2015-12-31 23:59:59.
+INFO: The collection of indicators since 2015-01-01 00:00:00 till 2015-12-31 23:59:59 has been successfully found.

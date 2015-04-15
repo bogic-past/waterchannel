@@ -9,7 +9,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<link rel="stylesheet" href="<c:url value="/resources/css/jquery.css"/>"/>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
@@ -17,55 +18,61 @@
             <c:url var="addUrl" value="/addUser"/>
             <form:form 
                     action="${addUrl}" method="post" modelAttribute="user" id="registrationForm" class="form-horizontal">
+                <sec:csrfInput/>
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">First name</label>
+                    <label class="col-xs-3 control-label">Прізвище</label>
                     <div class="col-xs-5">
-                        <input type="text" class="form-control" name="name" placeholder="First name" />
+                        <input type="text" class="form-control" name="surname" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">Last name </label>
+                    <label class="col-xs-3 control-label">Ім'я</label>
                     <div class="col-xs-5">
-                        <input type="text" class="form-control" name="surname" placeholder="Last name" />
+                        <input type="text" class="form-control" name="name" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">Middle name </label>
+                    <label class="col-xs-3 control-label">По-батькові</label>
                     <div class="col-xs-5">
-                        <input type="text" class="form-control" name="middleName" placeholder="Middle name" />
+                        <input type="text" class="form-control" name="middleName" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">Login</label>
+                    <label class="col-xs-3 control-label">Електронна пошта</label>
                     <div class="col-xs-5">
-                        <input id="login" type="text" class="form-control" name="login" placeholder="login"/>
-                        <div id="login-errors" ></div>
+                        <input type="email" class="form-control" name="email" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">Password</label>
+                    <label class="col-xs-3 control-label">Логін</label>
                     <div class="col-xs-5">
-                        <input type="password" class="form-control" name="password" id = "password" placeholder="password"/>
+                        <input id="login" type="text" class="form-control" name="login"/>
+                        <div id="login-errors" class ='login-error'></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-3 control-label">Пароль</label>
+                    <div class="col-xs-5">
+                        <input type="password" class="form-control" name="password" id = "password" />
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="col-xs-3 control-label">Confirm password</label>
+                    <label class="col-xs-3 control-label">Підтвердження</label>
                     <div class="col-xs-5">
-                        <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm password"/>
+                        <input type="password" class="form-control" name="confirmPassword" />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-xs-9 col-xs-offset-3">
-                        <button id="submit" type="submit" class="btn btn-primary" name="signup" value="Sign up">Submit</button>
+                        <button id="submit" type="submit" class="btn btn-primary" name="sign up" value="">Зареєструватись</button>
                     </div>
                 </div>
             </form:form>
         </div>
-        
-        <script src="/resources/js/jquery.js"></script>
-        <script src="/resources/js/jquery-validate.js"></script>
+
+        <script src="/resources/js/jquery/jquery-validate.js"></script>
         <script type="text/javascript">
             var restURL = '${restUrl}';
         </script>

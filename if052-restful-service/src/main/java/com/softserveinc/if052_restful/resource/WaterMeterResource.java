@@ -1,165 +1,170 @@
 package com.softserveinc.if052_restful.resource;
 
-import com.softserveinc.if052_restful.domain.WaterMeter;
+import com.softserveinc.if052_core.domain.Indicator;
+import com.softserveinc.if052_core.domain.WaterMeter;
 import com.softserveinc.if052_restful.service.WaterMeterService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
- * Created by Danylo Tiahun on 11.02.2015.
- */
+* Created by Danylo Tiahun on 11.02.2015.
+*/
 
-@Path("/watermeters")
+@RestController
+@RequestMapping("/rest/watermeters")
 public class WaterMeterResource {
 
     @Autowired
     private WaterMeterService waterMeterService;
 
-    private static Logger logger = Logger.getLogger(WaterMeterResource.class.getName());
+    private static Logger LOGGER = Logger.getLogger(WaterMeterResource.class.getName());
 
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getAllWaterMeters() {
-        logger.info("INFO: Searching for the whole collection of watermeters.");
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    public List<WaterMeter> getAllWaterMeters() {
+        LOGGER.info("INFO: Searching for the whole collection of meters.");
         List<WaterMeter> waterMeters = waterMeterService.getAllWaterMeters();
-        logger.info("INFO: The whole collection of watermeter has been found.");
-        return Response
-                .status(Response.Status.OK)
-                .entity(waterMeters)
-                .build();
+        LOGGER.info("INFO: The whole collection of meters has been found.");
+        return waterMeters;
     }
 
-    @GET
-    @Path("{waterMeterId}")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getWaterMeter(@PathParam("waterMeterId") int waterMeterId) {
-        logger.info("INFO: Searching for the watermeter with id " + waterMeterId + ".");
+    @RequestMapping(value = "{waterMeterId}", method = RequestMethod.GET, produces = "application/json")
+    public WaterMeter getWaterMeter(
+        @PathVariable("waterMeterId") int waterMeterId,
+        HttpServletResponse response) {
+        LOGGER.info("INFO: Searching for the meter with id " + waterMeterId + ".");
         WaterMeter waterMeter = waterMeterService.getWaterMeterById(waterMeterId);
         if (waterMeter == null) {
-            logger.info("INFO: Watermeter with requested id " + waterMeterId + " has not been found.");
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .build();
+            LOGGER.info("INFO: Meter with requested id " + waterMeterId + " has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
         }
-        logger.info("INFO: Watermeter with requested id " + waterMeterId + " has been successfully found.");
-        return Response
-                .status(Response.Status.OK)
-                .entity(waterMeter)
-                .build();
-
+        LOGGER.info("INFO: Meter with requested id " + waterMeterId + " has been successfully found.");
+        return waterMeter;
     }
 
-    @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response insertWaterMeter(WaterMeter waterMeter) {
-        logger.info("INFO: Adding a new watermeter.");
-        if (waterMeter.getName().length() < 1) {
-            logger.warn("WARNING: Watermeter name cannot be empty.");
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .build();
+    @RequestMapping(value = "/firstMeter", method = RequestMethod.GET, produces = "application/json")
+    public WaterMeter getFirstMeter(HttpServletResponse response) {
+        LOGGER.info("INFO: Searching for first meter for the requested user.");
+        WaterMeter waterMeter = waterMeterService.getFirstMeter();
+        if (waterMeter == null) {
+            LOGGER.info("INFO: First meter for the requested user has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
         }
+        LOGGER.info("INFO:First meter requested user has been successfully found.");
+        return waterMeter;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, produces = "application/json")
+    public WaterMeter insertWaterMeter(
+        @Valid
+        @RequestBody
+        WaterMeter waterMeter,
+        HttpServletResponse response) {
+        
+//        if (result.hasErrors()) {
+//            LOGGER.info("Add watermeter validation found errors in request");
+//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            return null;
+//        }
+        LOGGER.info("INFO: Adding a new meter.");
+//        if (waterMeter.getName().length() < 1) {
+//            LOGGER.warn("WARNING: Meter name cannot be empty.");
+//            return Response
+//                    .status(Response.Status.BAD_REQUEST)
+//                    .build();
+//        }
         try {
             waterMeterService.insertWaterMeter(waterMeter);
-            logger.info("INFO: Watermeter has been successfully added with id " + waterMeter.getWaterMeterId() + ".");
-            return Response
-                    .status(Response.Status.CREATED)
-                    .header("Location", "/watermeters" + waterMeter.getWaterMeterId())
-                    .build();
+            LOGGER.info("INFO: Meter has been successfully added with id " + waterMeter.getWaterMeterId() + ".");
+            return waterMeter;
         } catch (DataIntegrityViolationException e) {
-            logger.warn("WARNING: Watermeter with this name already exist.", e);
+            LOGGER.warn("WARNING: Meter with this name already exist.", e);
         }
-        return Response
-                .status(Response.Status.BAD_REQUEST)
-                .build();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return null;
     }
 
-    @POST
-    @Path("{waterMeterId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response insertWaterMeter(@PathParam("waterMeterId") int waterMeterId, WaterMeter waterMeter) {
-        logger.info("INFO: Watermeter id cannot be provided by the request.");
-        return Response
-                .status(Response.Status.NOT_FOUND)
-                .build();
+    @RequestMapping(value = "{waterMeterId}", method = RequestMethod.POST)
+    public void insertWaterMeter(
+        @PathVariable("waterMeterId") int waterMeterId, 
+        @RequestBody
+        WaterMeter waterMeter,
+        HttpServletResponse response) {
+        LOGGER.info("INFO: Meter id cannot be provided by the request.");
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 
-    @PUT
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response updateWaterMeter(WaterMeter waterMeter) {
-        logger.info("INFO: The whole collection of watermeters cannot be updated.");
-        return Response
-                .status(Response.Status.NOT_FOUND)
-                .build();
+    @RequestMapping(method = RequestMethod.PUT, produces = "application/json")
+    public WaterMeter updateWaterMeter(
+        @RequestBody
+        WaterMeter waterMeter,
+        HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        LOGGER.info("INFO: The whole collection of meters cannot be updated.");
+        return waterMeter;
     }
 
-    @PUT
-    @Path("{waterMeterId}")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response updateWaterMeter(@PathParam("waterMeterId") int waterMeterId, WaterMeter waterMeter) {
-        logger.info("INFO: Updating a watermeter with id " + waterMeterId + ".");
-        if (waterMeter.getName().length() < 1) {
-            logger.warn("WARNIGN: Watermeter name cannot be empty.");
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .build();
-        }
+    @RequestMapping(value = "{waterMeterId}", method = RequestMethod.PUT, produces = "application/json")
+    public WaterMeter updateWaterMeter(
+        @PathVariable("waterMeterId") int waterMeterId, 
+        @RequestBody
+        WaterMeter waterMeter,
+        HttpServletResponse response) {
+        LOGGER.info("INFO: Updating a meter with id " + waterMeterId + ".");
+//        if (waterMeter.getName().length() < 1) {
+//            LOGGER.warn("WARNIGN: Meter name cannot be empty.");
+//            return Response
+//                    .status(Response.Status.BAD_REQUEST)
+//                    .build();
+//        }
         if (waterMeterService.getWaterMeterById(waterMeterId) == null) {
-            logger.info("INFO: Watermeter with requested id " + waterMeterId + " is not found.");
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .build();
+            LOGGER.info("INFO: Meter with requested id " + waterMeterId + " is not found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
         }
         try {
             waterMeterService.updateWaterMeter(waterMeter);
-            logger.info("INFO: Watermeter with id " + waterMeterId + " has been successfully updated.");
-            return Response
-                    .status(Response.Status.NO_CONTENT)
-                    .build();
+            LOGGER.info("INFO: Meter with id " + waterMeterId + " has been successfully updated.");
+            return waterMeter;
         } catch (DataIntegrityViolationException e) {
-            logger.warn("WARNING: Watermeter with this name already exist.", e);
+            LOGGER.warn("WARNING: Meter with this name already exist.", e);
         }
-        return Response
-                .status(Response.Status.BAD_REQUEST)
-                .build();
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return null;
     }
 
-    @DELETE
-    public Response deleteWaterMeter() {
-        logger.info("INFO: The whole collection of watermeters cannot be deleted.");
-        return Response
-                .status(Response.Status.NOT_FOUND)
-                .build();
+    @RequestMapping(method = RequestMethod.DELETE, produces = "application/json")
+    public void deleteWaterMeter(HttpServletResponse response) {
+        LOGGER.info("INFO: The whole collection of meters cannot be deleted.");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            
     }
 
-    @DELETE
-    @Path("{waterMeterId}")
-    public Response deleteWaterMeter(@PathParam("waterMeterId") int waterMeterId) {
-        logger.info("INFO: Deleting a watermeter with id " + waterMeterId + ".");
+    @RequestMapping(value = "{waterMeterId}", method = RequestMethod.DELETE, produces = "application/json")
+    public void deleteWaterMeter(
+        @PathVariable("waterMeterId") int waterMeterId,
+        HttpServletResponse response) {
+        LOGGER.info("INFO: Deleting a meter with id " + waterMeterId + ".");
         if (waterMeterService.getWaterMeterById(waterMeterId) == null) {
-            logger.info("INFO: Watermeter with requested id " + waterMeterId + " is not found.");
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .build();
-        }
+            LOGGER.info("INFO: Meter with requested id " + waterMeterId + " is not found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else
         try {
             waterMeterService.deleteWaterMeter(waterMeterId);
-            logger.info("INFO : Watermeter with id " + waterMeterId + " has been successfully deleted.");
-            return Response
-                    .status(Response.Status.NO_CONTENT)
-                    .build();
+            LOGGER.info("INFO : Meter with id " + waterMeterId + " has been successfully deleted.");
         } catch (DataIntegrityViolationException e) {
-            logger.warn("WARNING: Watermeter with requester id " + waterMeterId
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            LOGGER.warn("WARNING: Meter with requester id " + waterMeterId
                         + " contains list of indicators so it cannot be deleted.", e);
         }
-        return Response
-                .status(Response.Status.BAD_REQUEST)
-                .build();
     }
 
 

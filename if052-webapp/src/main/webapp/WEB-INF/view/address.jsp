@@ -9,6 +9,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
@@ -22,7 +23,9 @@
                         <th>Вулиця</th>
                         <th>Будинок</th>
                         <th>Квартира</th>
-                        <th>Тариф</th>
+                        <th>Лічильники</th>
+                        <th>Редагування</th>
+                        <th>Видалення</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -32,19 +35,33 @@
                             <td><c:out value="${address.street}"/></td>
                             <td><c:out value="${address.building}"/></td>
                             <td><c:out value="${address.apartment}"/></td>
-                            <td><c:out value="${address.tariff}"/></td>
                             <td><a href="<c:url value="/watermeter?addressId=${address.addressId}"/>">
-                                <button>Water Meter</button></a></td>
+                                <button class="btn btn-default">
+                                    <span class="glyphicon glyphicon-dashboard" aria-hidden="true"></span>
+                                </button></a></td>
                             <td><a href="<c:url value="/updateAddress?addressId=${address.addressId}"/>">
-                                <button>UPDATE</button></a></td>
+                                <button class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a></td>
                             <td><a href="<c:url value="/deleteAddress?addressId=${address.addressId}"/>">
-                                <button>DELETE</button></a></td>
+                                <button class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></a></td>
         
                         </tr>
                     </c:forEach>
                 </table>
+                    <%--hard-code url!!!--%>
+                    <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                        <div class="btn-group" role="group">
+                            <a href="<c:url value='/map'/>" class="btn btn-default
+                                    <c:if test='${addresses.size()==0}'>disabled</c:if>"  role="button">
+                                <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
+                                Подивитись на карті
+                            </a>
+                        </div>
+                    </div>
+
+
                 <c:url var="addUrl" value="/addAddress"/>
                 <form:form action="${addUrl}" method="post" modelAttribute="address">
+                    <sec:csrfInput/>
                     <table class="box-table-a">
                         <caption> Додати адресу </caption>
                         <thead>
@@ -53,28 +70,26 @@
                             <th>Вулиця</th>
                             <th>Будинок</th>
                             <th>Квартира</th>
-                            <th>Тариф</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
                             <td>
-                                <input type="text" name="city" />
+                                <input class="form-control" type="text" name="city" required title="Це поле обов'язкове"/>
                             </td>
                             <td> 
-                                <input type="text" name="street" />
+                                <input class="form-control" type="text" name="street" required title="Це поле обов'язкове"/>
                             </td>
                             <td>
-                                <input type="text" name="building" />
+                                <input class="form-control" type="text" name="building" required title="Це поле обов'язкове"/>
                             </td>
                             <td>
-                                <input type="text" name="apartment" />
+                                <input class="form-control" type="text" name="apartment" required title="Це поле обов'язкове"/>
                             </td>
                             <td>
-                                <input type="number" step="0.1" name="tariff" />
-                            </td>
-                            <td>
-                                <button class="add-button" type="submit">Add</button>
+                                <button class="btn btn-default" type="submit">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                </button>
                             </td>
                         </tr>
                         </tbody>

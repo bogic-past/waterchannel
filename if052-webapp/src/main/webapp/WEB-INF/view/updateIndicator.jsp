@@ -10,48 +10,52 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
         <div class="body">
 
-            <h1> UPDATE FORM FOR INDICATOR </h1>
+            <h1>Редагування показника</h1>
 
             <c:url var="updateUrl" value="/updateIndicator"/>
             <form:form action="${updateUrl}" method="post" modelAttribute="indicator">
+                <sec:csrfInput/>
                 <table class="box-table-a">
-                    <caption> Update Indicator</caption>
                     <thead>
                         <tr>
                             <th>Дата</th>
-                            <th>Значення</th>
+                            <th>Тариф</th>
+                            <th>Показник</th>
                             <th>Оплачено</th>
-                            <th>Дії</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>
-                                <input type="hidden" name="indicatorId" value="${indicator.indicatorId}"/>
-                                <script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
-                                <script type="text/javascript">
-                                    $(function() {
-                                        $( "#datepicker" ).datepicker();
-                                    });
-                                </script>
-                                <input type="text" id="datepicker" name="date" value="<fmt:formatDate value='${indicator.date}' pattern='MM/dd/yyyy' />" />
+                                <input class="form-control" type="hidden" name="indicatorId" value="${indicator.indicatorId}"/>
+                                <input class="form-control" type="text" id="datepicker" name="dateStr" value="<fmt:formatDate value='${indicator.date}' pattern='dd-MM-yyyy' />" />
                             </td>
                             <td>
-                                <input type="number" step="1" name="value" value="${indicator.value}"/>
+                                <input class="form-control" type="number" step="0.01" name="tariffPerDate" value="${indicator.tariffPerDate}"/>
                             </td>
                             <td>
-                                <input type="checkbox" name="paid" <c:if test="${indicator.paid}">checked="checked"</c:if> />
+                                <input class="form-control" type="number" step="1" name="value" value="${indicator.value}"/>
                             </td>
-                            <td><button class="add-button" type="submit">UPDATE</button></td>
+                            <td>
+                                <input class="checkbox" type="checkbox" name="paid" <c:if test="${indicator.paid}">checked="checked"</c:if> />
+                            </td>
+                            <td><button class="btn btn-default" type="submit">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                            </button></td>
                         </tr>
                     </tbody>
                 </table>
             </form:form>
         </div>
+
+        <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui-i18n.min.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/resources/js/updateIndicator.js'/>"></script>
     </tiles:putAttribute>
 </tiles:insertDefinition>

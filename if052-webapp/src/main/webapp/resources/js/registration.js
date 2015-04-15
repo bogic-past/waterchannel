@@ -2,8 +2,6 @@ $(document).ready(function() {
     $('#registrationForm').validate({
         rules: {
             "name": {
-                required : true,
-                rangelength:[2, 32]
             },
             "surname": {
                 required : true,
@@ -17,6 +15,10 @@ $(document).ready(function() {
                 required : true,
                 rangelength:[8, 32]
             },
+            "email":{
+                required : true,
+                email: true
+            },
             "password": {
                 required : true,
                 rangelength:[8, 32]
@@ -27,13 +29,36 @@ $(document).ready(function() {
                 equalTo:"#password"
             }
         },
-        tooltip_options: {
-            "name": {
-                trigger:'focus',
-                placement:'right',html:true
-                        }
-        },
         messages: {
+            "name": {
+                required : "Це поле обов'язкове для запису",
+                rangelength:"Від 2 до 32 символів"
+            },
+            "surname": {
+                required :"Це поле обов'язкове для запису",
+                rangelength:"Від 2 до 32 символів"
+            },
+            "middleName": {
+                required : "Це поле обов'язкове для запису",
+                rangelength: "Від 2 до 32 символів"
+            },
+            "login": {
+                required : "Це поле обов'язкове для запису",
+                rangelength: "Від 8 до 32 символів"
+            },
+            "email":{
+                required : "Це поле обов'язкове для запису",
+                email: "Невалідний емайл"
+            },
+            "password": {
+                required : "Це поле обов'язкове для запису",
+                rangelength: "Від 8 до 32 символів"
+            },
+            "confirmPassword":{
+                required : "Це поле обов'язкове для запису",
+                rangelength: "Від 8 до 32 символів",
+                equalTo:"Пароль підтверджено невірно"
+            }
         }
     });
 
@@ -54,11 +79,12 @@ $(document).ready(function() {
                             url: restURL + 'users/login/' + $('#login').val(),
                             success: function (Xhr) {
                                 $('#login-errors').html(
-                                    'This login has already exist'
+                                    'Такий логін вже існує'
                                 );
                                 $("#submit").attr('disabled', 'disabled');
                             },
                             error: function (Xhr) {
+                                $('#login-errors').html("");
                                 $("#submit").removeAttr('disabled');
                             }
                         });
@@ -66,5 +92,8 @@ $(document).ready(function() {
                 }, 
                 500
             );
+            if ($('#login').val().length < 8) {
+                $('#login-errors').html("");
+            }
         });
     });
