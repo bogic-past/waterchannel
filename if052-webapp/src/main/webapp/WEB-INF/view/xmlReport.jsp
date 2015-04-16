@@ -13,6 +13,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
@@ -21,67 +22,79 @@
 
             <div class="container">
 
-                <h2>Оберіть фільтри для звіту:</h2>
+                <h2><spring:message code="report.chooseFilters"/>:</h2>
                 <c:url var="createXmlUrl" value="/createXmlReport"/>
-                <form:form action="${createXmlUrl}" method="get" modelAttribute="reportRequest" id="xmlForm" autocomplete="off">
+                <form:form action="${createXmlUrl}" method="get" modelAttribute="reportRequest" id="xmlForm"
+                           autocomplete="off">
 
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="users"><spring:message code="report.login"/></label>
 
-                    <div class="form-group">
-                        <label for="users">Логін користувача</label>
-                        <div class="checkbox-inline">
-                            <label class="checkbox-inline">
-                                <input type="checkbox" name="users" value="ALL" id="allUsers"/> Усі користувачі
-                            </label>
+                                <div class="checkbox-inline">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" name="users" value="ALL" id="allUsers"/> <spring:message
+                                            code="report.allUsers"/>
+                                    </label>
+                                </div>
+                                <input type="text" name="users" class="form-control" id="users" required/>
+                                <label hidden="true" id="noLoginLabel"><font color="red"><spring:message
+                                        code="report.noLogin"/></font></label>
+                            </div>
+                            <div class="form-group">
+                                <label for="startDate"><spring:message code="report.startDate"/></label>
+                                <input type="text" name="startDate" class="form-control" id="startDate"
+                                       value="${startDate}" required/>
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate"><spring:message code="report.endDate"/></label>
+                                <input type="text" name="endDate" class="form-control" id="endDate" value="${endDate}"
+                                       required/>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox-inline" id="types">
+                                    <label for="types"><spring:message code="report.meterTypes"/></label>
+
+                                    <div class="checkbox-inline">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" id="allTypes"/> <spring:message
+                                                code="report.allTypes"/>
+                                        </label>
+                                    </div>
+                                    <br>
+                                    <c:forEach var="meterType" items="${meterTypes}">
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" class="checkType" name="types"
+                                                   value="${meterType.meterTypeId}"/> ${meterType.type}
+                                        </label>
+                                    </c:forEach>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" id="subBtn" class="btn btn-primary" disabled>
+                                    <spring:message code="report.downloadReport"/> (XML)
+                                </button>
+                            </div>
                         </div>
-                        <input type="text" name="users" class="form-control" id="users" required />
-                        <label hidden="true" id="noLoginLabel"><font color="red">Такого логіна немає. Оберіть варіант зі списку.</font></label>
                     </div>
 
-                    <div class="form-group">
-                        <label for="startDate">Початкова дата</label>
-                        <input type="text" name="startDate" class="form-control" id="startDate" value="${startDate}" required/>
-                    </div>
-                    <div class="form-group">
-                        <label for="endDate">Кінцева дата</label>
-                        <input type="text" name="endDate" class="form-control" id="endDate" value="${endDate}" required/>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="checkbox-inline" id="types" >
-                            <label for="types">Необхідні види лічильників</label>
-                            <div class="checkbox-inline">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" id="allTypes" /> Усі види
-                                </label>
-                            </div><br>
-                            <c:forEach var="meterType" items="${meterTypes}">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" class="checkType" name="types" value="${meterType.meterTypeId}" /> ${meterType.type}
-                                </label>
-                            </c:forEach>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <button type="submit" id="subBtn" class="btn btn-primary" disabled>Завантажити xml-звіт</button>
-                    </div>
                 </form:form>
             </div>
 
         </div>
 
 
-
         <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui-i18n.min.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/resources/js/jquery/jquery-ui.js'/>"></script>
+        <script type="text/javascript" src="<c:url value='/resources/js/datepicker.js'/>"></script>
         <script type="text/javascript" src="<c:url value='/resources/js/xmlReport.js'/>"></script>
         <script>
             var logins = [];
-            $(document).ready(function() {
+            $(document).ready(function () {
                 <c:forEach items="${logins}" var="login">
                 logins.push("<c:out value="${login}" />");
                 </c:forEach>
-
             });
         </script>
 

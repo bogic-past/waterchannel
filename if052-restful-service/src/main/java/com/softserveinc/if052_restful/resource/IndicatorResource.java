@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,8 +101,22 @@ public class IndicatorResource {
     }
 
     @RequestMapping(value = "{indicatorId}", method = RequestMethod.DELETE, produces = "application/json")
-    public void deleteIndicator(@PathVariable("indicatorId") int indicatorId) {
-        indicatorService.deleteIndicator(indicatorId);
+    public void deleteIndicator(
+            @PathVariable("indicatorId") int indicatorId,
+            HttpServletResponse response) {
+        if(indicatorService.getIndicatorById(indicatorId) == null){
+            LOGGER.info("INFO: Indicator with requested id " + indicatorId + " has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } else
+            try {
+                LOGGER.info("INFO: Deleting an indicator with id " + indicatorId + ".");
+                indicatorService.deleteIndicator(indicatorId);
+                LOGGER.info("INFO: Indicator with requested id " + indicatorId + " has been successfully deleted.");
+            }
+            catch (Exception e){
+                LOGGER.info("INFO: Internal error");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
@@ -109,20 +124,52 @@ public class IndicatorResource {
         @RequestBody
         Indicator indicator,
         HttpServletResponse response){
-        LOGGER.info("INFO: Adding a new indicator.");
-        indicatorService.insertIndicator(indicator);
-        LOGGER.info("INFO: Indicator has been successfully added with id " + indicator.getIndicatorId() + ".");
-
-        return indicator;
+        try {
+            LOGGER.info("INFO: Adding a new indicator.");
+            indicatorService.insertIndicator(indicator);
+            LOGGER.info("INFO: Indicator has been successfully added with id " + indicator.getIndicatorId() + ".");
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            return indicator;
+        }
+        catch (ConstraintViolationException e){
+            LOGGER.info("INFO: Invalid indicator's data.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+        catch (Exception e) {
+            LOGGER.info("INFO: Internal error");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
     }
 
     @RequestMapping(value = "{indicatorId}", method = RequestMethod.PUT, produces = "application/json")
     public Indicator updateIndicator(
         @PathVariable("indicatorId") int indicatorId,
         @RequestBody
-        Indicator indicator){
-        indicatorService.updateIndicator(indicator);
-
-        return indicator;
+        Indicator indicator,
+        HttpServletResponse response){
+        if(indicatorService.getIndicatorById(indicatorId) == null){
+            LOGGER.info("INFO: Indicator with requested id " + indicatorId + " has not been found.");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        } else
+        try {
+            LOGGER.info("INFO: Updating an indicator with id " + indicatorId + ".");
+            indicatorService.updateIndicator(indicator);
+            LOGGER.info("INFO: Indicator with id " + indicatorId + " has been successfully updated.");
+            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            return indicator;
+        }
+        catch (ConstraintViolationException e){
+            LOGGER.info("INFO: Invalid indicator's data.");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+        catch (Exception e) {
+            LOGGER.info("INFO: Internal error");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
     }
 }
