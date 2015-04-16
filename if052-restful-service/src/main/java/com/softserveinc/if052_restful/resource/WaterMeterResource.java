@@ -1,12 +1,16 @@
 package com.softserveinc.if052_restful.resource;
 
 import com.softserveinc.if052_core.domain.Indicator;
+import com.softserveinc.if052_core.domain.Field;
+import com.softserveinc.if052_core.domain.ValidationError;
 import com.softserveinc.if052_core.domain.WaterMeter;
+import com.softserveinc.if052_restful.controller.ErrorController;
 import com.softserveinc.if052_restful.service.WaterMeterService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +27,9 @@ public class WaterMeterResource {
 
     @Autowired
     private WaterMeterService waterMeterService;
+
+    @Autowired
+    private ErrorController errorController;
 
     private static Logger LOGGER = Logger.getLogger(WaterMeterResource.class.getName());
 
@@ -63,17 +70,13 @@ public class WaterMeterResource {
     }
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
-    public WaterMeter insertWaterMeter(
+    public ValidationError insertWaterMeter(
         @Valid
         @RequestBody
         WaterMeter waterMeter,
         HttpServletResponse response) {
-        
-//        if (result.hasErrors()) {
-//            LOGGER.info("Add watermeter validation found errors in request");
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            return null;
-//        }
+
+
         LOGGER.info("INFO: Adding a new meter.");
 //        if (waterMeter.getName().length() < 1) {
 //            LOGGER.warn("WARNING: Meter name cannot be empty.");
@@ -84,7 +87,7 @@ public class WaterMeterResource {
         try {
             waterMeterService.insertWaterMeter(waterMeter);
             LOGGER.info("INFO: Meter has been successfully added with id " + waterMeter.getWaterMeterId() + ".");
-            return waterMeter;
+            return null;
         } catch (DataIntegrityViolationException e) {
             LOGGER.warn("WARNING: Meter with this name already exist.", e);
         }

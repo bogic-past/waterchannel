@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * This class is a model of the datatable "ADDRESS"
@@ -22,18 +23,19 @@ public final class Address {
 
     @NotNull
     @NotEmpty
+    @Length(max=32)
 	private String city;
 
     @NotNull
     @NotEmpty
+    @Length(max=32)
 	private String street;
 
     @NotNull
     @NotEmpty
+    @Length(max=10)
 	private String building;
 
-    @NotNull
-    @NotEmpty
 	private String apartment;
 
     @NotNull

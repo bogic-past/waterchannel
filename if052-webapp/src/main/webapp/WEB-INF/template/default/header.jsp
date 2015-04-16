@@ -8,6 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <c:url value="/" var="base"/>
 
@@ -68,6 +69,12 @@
                         </security:authorize>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="${base}?lang=en">EN</a>
+                        </li>
+                        <li>
+                            <a href="${base}?lang=ua">UA</a>
+                        </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>

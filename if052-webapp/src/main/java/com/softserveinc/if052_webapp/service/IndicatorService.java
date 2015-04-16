@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * Created by Maksym on 2/12/2015.
+ * Class for handling REST operations
  */
 public class IndicatorService {
 
@@ -180,9 +180,14 @@ public class IndicatorService {
      */
     private void parseDate(Indicator indicator, String dateStr, ServiceResponse serviceResponse) {
         try {
-            System.out.println(dateStr);
-
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat formatter;
+            int strLng = dateStr.length();
+            if (dateStr.substring(strLng-2).equals("uk")) {
+                formatter  = new SimpleDateFormat("dd-MM-yyyy");
+            } else {
+                formatter = new SimpleDateFormat("MM/dd/yyyy");
+            }
+            dateStr = dateStr.substring(0, strLng-2);
             Date date = formatter.parse(dateStr);
             indicator.setDate(date);
 
@@ -202,6 +207,7 @@ public class IndicatorService {
      */
     private boolean isError404(ServiceResponse serviceResponse, ResponseEntity<String> responseEntity) {
         if (responseEntity.getStatusCode().value() == 404) {
+            System.out.println(404);
             serviceResponse.setStatus("error404");
             return true;
         }
@@ -216,6 +222,7 @@ public class IndicatorService {
      */
     private boolean isError400(ServiceResponse serviceResponse, ResponseEntity<String> indicatorResponseEntity) {
         if (indicatorResponseEntity.getStatusCode().value() == 400) {
+            System.out.println(400);
             serviceResponse.setStatus("error400");
             serviceResponse.setMessage("Некоректний запит. Будь ласка, перевірте правильність введених даних");
             return true;

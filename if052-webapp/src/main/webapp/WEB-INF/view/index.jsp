@@ -9,25 +9,59 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<fmt:message var="dateFormat" key="local.date.format"/>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
         <div class="body">
             <div class="container">
 
-                <blockquote><h2>Привіт,  ${surname} ${name}!</h2></blockquote>
+                <blockquote><h2>
+                    <spring:message
+                        code="blockquote.welcome">
+                </spring:message>,  ${surname} ${name}!</h2></blockquote>
 
                 <c:if test="${notification == null}">
                 <table class="table table-hover" class="display">
-                <caption>${limit} останніх занесених показів </caption>
+                <caption>
+                ${limit} <spring:message
+                            code="caption.lastIndicator">
+                        </spring:message>
+                </caption>
                 <thead>
                 <tr>
-                    <th>Дата</th>
-                    <th>Показник</th>
-                    <th>Тариф</th>
-                    <th>Оплачено</th>
-                    <th>Опубліковано</th>
-                    <th>Лічильник</th>
+                    <th>
+                        <spring:message
+                                code="th.date">
+                        </spring:message>
+                    </th>
+                    <th>
+                        <spring:message
+                                code="th.value">
+                        </spring:message>
+                    </th>
+                    <th>
+                        <spring:message
+                                code="th.tariff">
+                        </spring:message>
+                    </th>
+                    <th>
+                        <spring:message
+                                code="th.paid">
+                        </spring:message>
+                    </th>
+                    <th>
+                        <spring:message
+                                code="th.published">
+                        </spring:message>
+                    </th>
+                    <th>
+                        <spring:message
+                                code="th.meter">
+                        </spring:message>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -35,7 +69,7 @@
                 <c:forEach var="indicator" items="${lastIndicators}">
                     <tr>
                         <td>
-                            <fmt:formatDate value="${indicator.date}" pattern="dd-MM-yyyy" />
+                            <fmt:formatDate value="${indicator.date}" pattern="${dateFormat}" />
                         </td>
                         <td><c:out value="${indicator.value}"/></td>
                         <td><c:out value="${indicator.tariffPerDate}"/></td>
@@ -64,7 +98,7 @@
                         <a href="<c:url value='/addresses'/>"
                            class="btn btn-default"  role="button">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            Додати
+                            <spring:message code="indicators.addIndicator"/>
                         </a>
                     </div>
                 </c:if>

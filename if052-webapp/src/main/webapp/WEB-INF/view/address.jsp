@@ -10,6 +10,7 @@
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <tiles:insertDefinition name="defaultTemplate">
     <tiles:putAttribute name="body">
@@ -19,13 +20,13 @@
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th>Місто</th>
-                        <th>Вулиця</th>
-                        <th>Будинок</th>
-                        <th>Квартира</th>
-                        <th>Лічильники</th>
-                        <th>Редагування</th>
-                        <th>Видалення</th>
+                        <th><spring:message code="address.city"/></th>
+                        <th><spring:message code="address.street"/></th>
+                        <th><spring:message code="address.building"/></th>
+                        <th><spring:message code="address.apartment"/></th>
+                        <th><spring:message code="address.meter"/></th>
+                        <th><spring:message code="address.edit"/></th>
+                        <th><spring:message code="address.remove"/></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,38 +54,38 @@
                             <a href="<c:url value='/map'/>" class="btn btn-default
                                     <c:if test='${addresses.size()==0}'>disabled</c:if>"  role="button">
                                 <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                                Подивитись на карті
+                                <spring:message code="address.lookUpOnTheMap"/>
                             </a>
                         </div>
                     </div>
 
 
                 <c:url var="addUrl" value="/addAddress"/>
-                <form:form action="${addUrl}" method="post" modelAttribute="address">
+                <form:form action="${addUrl}" method="post" id="addAddress" modelAttribute="address">
                     <sec:csrfInput/>
                     <table class="box-table-a">
-                        <caption> Додати адресу </caption>
+                        <caption><spring:message code="address.addAddress"/></caption>
                         <thead>
                         <tr>
-                            <th>Місто</th>
-                            <th>Вулиця</th>
-                            <th>Будинок</th>
-                            <th>Квартира</th>
+                            <th><spring:message code="address.city"/></th>
+                            <th><spring:message code="address.street"/></th>
+                            <th><spring:message code="address.building"/></th>
+                            <th><spring:message code="address.apartment"/></th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
                             <td>
-                                <input class="form-control" type="text" name="city" required title="Це поле обов'язкове"/>
+                                <input class="form-control" type="text" name="city" />
                             </td>
                             <td> 
-                                <input class="form-control" type="text" name="street" required title="Це поле обов'язкове"/>
+                                <input class="form-control" type="text" name="street" />
                             </td>
                             <td>
-                                <input class="form-control" type="text" name="building" required title="Це поле обов'язкове"/>
+                                <input class="form-control" type="text" name="building" "/>
                             </td>
                             <td>
-                                <input class="form-control" type="text" name="apartment" required title="Це поле обов'язкове"/>
+                                <input class="form-control" type="number" name="apartment" />
                             </td>
                             <td>
                                 <button class="btn btn-default" type="submit">
@@ -97,5 +98,16 @@
                 </form:form>
             </div>
         </div>
+
+        <script src="/resources/js/jquery/jquery-validate.js"></script>
+        <script type="text/javascript">
+            var messages = new Array();
+            messages['maxlength.city'] = "<spring:message code='maxlength.city' javaScriptEscape='true' />"
+            messages['maxlength.street'] = "<spring:message code='maxlength.street' javaScriptEscape='true' />"
+            messages['maxlength.building'] = "<spring:message code='maxlength.building' javaScriptEscape='true' />"
+            messages['required.field'] = "<spring:message code='required.field' javaScriptEscape='true' />"
+        </script>
+        <script src="/resources/js/address.js"></script>
+
     </tiles:putAttribute>
 </tiles:insertDefinition>

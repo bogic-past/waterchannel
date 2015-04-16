@@ -3,24 +3,25 @@ package com.softserveinc.if052_restful.controller;
 import com.softserveinc.if052_core.domain.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 
 @ControllerAdvice
-@RequestMapping(value = "/error")
 public class ErrorController {
+
     @Autowired
     protected MessageSource messageSource;
 
     public ErrorController() {
 
     }
-
 
     /**
      * Handle validation errors
@@ -29,7 +30,7 @@ public class ErrorController {
      * @return ValidationError Object for response about error
      */
     @ExceptionHandler( MethodArgumentNotValidException.class )
-    @ResponseStatus( HttpStatus.BAD_REQUEST )
+    @ResponseStatus( HttpStatus.OK )
     @ResponseBody
     public ValidationError processValidationError(
         MethodArgumentNotValidException exception
@@ -37,6 +38,7 @@ public class ErrorController {
         return this.processFieldErrors(
             exception.getBindingResult().getFieldErrors()
         );
+
     }
 
     /**
