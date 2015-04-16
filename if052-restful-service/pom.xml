@@ -259,15 +259,7 @@
                 </dependency>
             </dependencies>
             <build>
-                <resources>
-                    <resource>
-                        <filtering>false</filtering>
-                        <directory>${basedir}/src/main/resources</directory>
-                        <excludes>
-                            <exclude>psql-datasource.xml</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
+
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -300,15 +292,7 @@
                 </dependency>
             </dependencies>
             <build>
-                <resources>
-                    <resource>
-                        <filtering>false</filtering>
-                        <directory>${basedir}/src/main/resources</directory>
-                        <excludes>
-                            <exclude>h2-datasource.xml</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
+
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

@@ -28,7 +28,8 @@ public class AuthService {
         return auth;
     }
     public Auth getAuth(String stringUserId) {
-        Integer userId = Integer.parseInt(stringUserId);
+        int userId;
+        userId = Integer.parseInt(stringUserId);
         User user = userMapper.getAuth(userId);
 
         if (user == null) return null;
