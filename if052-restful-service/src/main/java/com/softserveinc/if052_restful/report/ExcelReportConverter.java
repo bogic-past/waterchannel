@@ -2,6 +2,7 @@ package com.softserveinc.if052_restful.report;
 
 import com.softserveinc.if052_core.domain.*;
 import com.softserveinc.if052_restful.service.UserService;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -19,13 +20,16 @@ import java.util.*;
  */
 
 @Component
-public class ExcelReportConverter extends ReportConverter{
+public class ExcelReportConverter extends ReportConverter {
 
     @Autowired
     private UserService userService;
 
+    private final String[] UAPhrases = {"Звітність за період", "для адреси", "Поточний тариф", "Дата", "Показник", "Тариф", "Вартість", "Статус оплати", "Оплачено", "Неоплачено"};
+    private final String[] ENPhrases = {"Statements for the period", "for address", "Current tariff", "Date", "Indicator", "Tariff", "Cost", "Payment status", "Paid", "Not Paid"};
+    private String[] phrases = {};
+
     private XSSFWorkbook workbook = new XSSFWorkbook();
-    private XSSFCreationHelper createHelper = workbook.getCreationHelper();
     private XSSFSheet sheet;
     private XSSFRow row;
     private XSSFCell cell;
@@ -34,12 +38,16 @@ public class ExcelReportConverter extends ReportConverter{
     private final int CELL_STEP = 3;
     private final int CELL_RANGE = 14;
 
-    private DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+    private DateFormat df;
     private int previousValue = 0;
+
+    private static Logger LOGGER = Logger.getLogger(ExcelReportConverter.class.getName());
 
     @Override
     public byte[] convert(Report report) {
+        setLocale(report);
         User user = userService.getReportUserByLogin(report.getUsers().get(0).getLogin());
+        LOGGER.info("Creating new Excel workbook for user with login " + report.getUsers().get(0).getLogin());
         this.workbook = new XSSFWorkbook();
         for (Address a : user.getAddresses()) {
             rowId = 0;
@@ -54,7 +62,7 @@ public class ExcelReportConverter extends ReportConverter{
                 for (Indicator i : wm.getIndicators()) {
                     if (i.getDate().compareTo(report.getStartDate()) >= 0
                             && i.getDate().compareTo(report.getEndDate()) <= 0) {
-                    writeIndicatorData(i);
+                        writeIndicatorData(i);
                     }
                 }
                 merge(rowId);
@@ -68,9 +76,10 @@ public class ExcelReportConverter extends ReportConverter{
             out.flush();
             out.close();
             workbook.close();
+            LOGGER.info("Workbook was written successfully.");
             return outputByte;
         } catch (IOException e) {
-
+            LOGGER.warn(e.getMessage(), e);
         }
 
         return new byte[]{};
@@ -79,10 +88,10 @@ public class ExcelReportConverter extends ReportConverter{
     private void writeTitleRow(Address a, Date startDate, Date endDate) {
         sheet.addMergedRegion(new CellRangeAddress(rowId, rowId, cellId, CELL_RANGE));
         row = sheet.createRow(rowId++);
-        row.setHeight((short)700);
+        row.setHeight((short) 700);
         cell = row.createCell(cellId++);
-        cell.setCellValue("Звітність за період " + df.format(startDate) + " - " + df.format(endDate)
-                + " для адреси " + a.getCity() + ", " + a.getStreet() + " " + a.getBuilding() + "/" + a.getApartment());
+        cell.setCellValue(phrases[0] + " " + df.format(startDate) + " - " + df.format(endDate)
+                + " " + phrases[1] + " " + a.getCity() + ", " + a.getStreet() + " " + a.getBuilding() + "/" + a.getApartment());
         cell.setCellStyle(titleRowStyle());
     }
 
@@ -91,10 +100,10 @@ public class ExcelReportConverter extends ReportConverter{
         rowId++;
         sheet.addMergedRegion(new CellRangeAddress(rowId, rowId, 0, CELL_RANGE));
         row = sheet.createRow(rowId++);
-        row.setHeight((short)500);
+        row.setHeight((short) 500);
         cellId = 0;
         cell = row.createCell(cellId++);
-        cell.setCellValue(wm.getMeterType().getType() + " (" + wm.getName() + "). Поточний тариф = " + wm.getTariff());
+        cell.setCellValue(wm.getMeterType().getType() + " (" + wm.getName() + "). " + phrases[2] + " = " + wm.getTariff());
         cell.setCellStyle(meterDataStyle());
     }
 
@@ -102,9 +111,9 @@ public class ExcelReportConverter extends ReportConverter{
         merge(rowId);
         row = sheet.createRow(rowId++);
         Map<Integer, String> columnNames = new HashMap<Integer, String>();
-        String[] colNames = {"Дата", "Показник", "Тариф", "Вартість", "Статус оплати"};
+        String[] colNames = {phrases[3], phrases[4], phrases[5], phrases[6], phrases[7]};
         for (int i = 0; i < colNames.length; i++) {
-            columnNames.put(i*CELL_STEP, colNames[i]);
+            columnNames.put(i * CELL_STEP, colNames[i]);
         }
         for (Map.Entry<Integer, String> me : columnNames.entrySet()) {
             cell = row.createCell(me.getKey());
@@ -118,16 +127,16 @@ public class ExcelReportConverter extends ReportConverter{
         row = sheet.createRow(rowId++);
         cellId = 0;
         cell = row.createCell(cellId);
-        cell.setCellValue(i.getDate());
+        cell.setCellValue(df.format(i.getDate()));
         cell.setCellStyle(indicatorDataStyle());
-        cell = row.createCell(cellId+=CELL_STEP);
+        cell = row.createCell(cellId += CELL_STEP);
         cell.setCellValue(i.getValue());
-        cell = row.createCell(cellId+=CELL_STEP);
+        cell = row.createCell(cellId += CELL_STEP);
         cell.setCellValue(i.getTariffPerDate());
-        cell = row.createCell(cellId+=CELL_STEP);
+        cell = row.createCell(cellId += CELL_STEP);
         cell.setCellValue((i.getValue() - previousValue) * i.getTariffPerDate());
-        cell = row.createCell(cellId+=CELL_STEP);
-        cell.setCellValue(i.isPaid() ? "Оплачено" : "Неоплачено");
+        cell = row.createCell(cellId += CELL_STEP);
+        cell.setCellValue(i.isPaid() ? phrases[8] : phrases[9]);
         cell.setCellStyle(indicatorDataStyle());
         previousValue = i.getValue();
     }
@@ -165,13 +174,12 @@ public class ExcelReportConverter extends ReportConverter{
     private XSSFCellStyle indicatorDataStyle() {
         XSSFCellStyle style = workbook.createCellStyle();
         style.setAlignment(CellStyle.ALIGN_RIGHT);
-        style.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy"));
         return style;
     }
 
     private Font titleRowFont() {
         Font font = workbook.createFont();
-        font.setFontHeightInPoints((short)14);
+        font.setFontHeightInPoints((short) 14);
         font.setFontName("Arial");
         font.setBold(true);
         return font;
@@ -183,5 +191,13 @@ public class ExcelReportConverter extends ReportConverter{
         }
     }
 
+    private void setLocale(Report report) {
+        if (report.getLocale().equals("uk")) {
+            phrases = UAPhrases;
+        } else {
+            phrases = ENPhrases;
+        }
+        df = new SimpleDateFormat(report.getDateFormat());
+    }
 
 }

@@ -60,9 +60,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <%--We use "previousValue" to calculate a subtraction of two indicators--%>
-                    <c:set var="previousValue" value="0"/>
-                    <c:forEach var="indicator" items="${indicators}">
+                    <c:forEach var="indicator" items="${indicators}" varStatus="iterator">
                         <tr>
                             <td>
                                 <span style='display:none'><%--this is for proper sorting by date --%>
@@ -72,9 +70,9 @@
                             </td>
                             <td><c:out value="${indicator.value}"/></td>
                             <td><c:out value="${indicator.tariffPerDate}"/></td>
-                            <td><fmt:formatNumber type="number" maxFractionDigits="3"
-                                                  value="${(indicator.value - previousValue)*indicator.tariffPerDate}"/>
-                                грн.
+                            <td>
+                                <fmt:formatNumber type="number" maxFractionDigits="3" value="${cost[iterator.index]}"/>
+                                <spring:message code="local.money"/>
                             </td>
                             <td>
                                     <span <c:if test="${indicator.paid}">class="glyphicon glyphicon-ok" </c:if>
@@ -99,7 +97,6 @@
                                 </a>
                             </td>
                         </tr>
-                        <c:set var="previousValue" value="${indicator.value}"/>
                     </c:forEach>
                     </tbody>
                 </table>
@@ -133,12 +130,13 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <input class="form-control" type="text" id="datepicker" name="dateStr"/>
+                                    <input class="form-control" type="text" id="datepicker"
+                                           name="dateStr" pattern='<spring:message code="local.date.parser"/>' required/>
                                     <input hidden="hidden" type="text" name="locale" value="${locale}"/>
                                 </td>
-                                <td><input class="form-control" type="number" step="1" min="0"
+                                <td><input class="form-control" type="number" step="1" min="0" required
                                            name="value" value="${indicators.size()!=0 ? indicators.get(indicators.size()-1).value : 0}"/></td>
-                                <td><input class="checkbox" type="checkbox" name="paid" /></td>
+                                <td><input class="checkbox" type="checkbox" name="paid"/></td>
                                 <td>
                                     <button class="btn btn-default" type="submit">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>

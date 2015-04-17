@@ -33,8 +33,13 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
     @Autowired
     private SecurityConfiguration securityConfig;
 
+    @Autowired
+    private CustomPermissionEvaluator customPermissionEvaluator;
+
     @Override
     protected MethodSecurityExpressionHandler createExpressionHandler() {
-        return new OAuth2MethodSecurityExpressionHandler();
+        OAuth2MethodSecurityExpressionHandler handler = new OAuth2MethodSecurityExpressionHandler();
+        handler.setPermissionEvaluator(customPermissionEvaluator);
+        return handler;
     }
 }

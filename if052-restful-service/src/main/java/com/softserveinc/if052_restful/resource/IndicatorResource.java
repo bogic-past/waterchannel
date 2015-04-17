@@ -4,10 +4,12 @@ import com.softserveinc.if052_core.domain.Indicator;
 import com.softserveinc.if052_restful.service.IndicatorService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class IndicatorResource {
 
     private static Logger LOGGER = Logger.getLogger(IndicatorResource.class.getName());
 
+    @PreAuthorize("hasPermission(#meterId, 'udWaterMeter')")
     @RequestMapping(value = "{meterId}", method = RequestMethod.GET, produces = "application/json")
     public List<Indicator> getIndicators(@PathVariable("meterId") int meterId) {
         LOGGER.info("INFO: Searching for the collection of indicators by meter with id " + meterId + ".");
@@ -51,6 +54,7 @@ public class IndicatorResource {
         return indicators;
     }
 
+    @PreAuthorize("hasPermission(#meterId, 'udWaterMeter')")
     @RequestMapping(value = "/byYear/{meterId}", method = RequestMethod.GET, produces = "application/json")
     public List<Indicator> getIndicatorsByYear(@PathVariable("meterId") int meterId,
                                   @RequestParam("year") int year ) {
@@ -68,6 +72,7 @@ public class IndicatorResource {
         return indicators;
     }
 
+    @PreAuthorize("hasPermission(#meterId, 'udWaterMeter')")
     @RequestMapping(value="/byDates/{meterId}", method = RequestMethod.GET, produces = "application/json")
     public List<Indicator> getIndicatorsByDates(@PathVariable("meterId") int meterId,
                                         @RequestParam("startDate") String startDate,
@@ -85,6 +90,7 @@ public class IndicatorResource {
         return indicators;
     }
 
+    @PreAuthorize("hasPermission(#indicatorId, 'indicator')")
     @RequestMapping(value = "/getone/{indicatorId}", method = RequestMethod.GET, produces = "application/json")
     public Indicator getIndicator(
             @PathVariable("indicatorId") int indicatorId,
@@ -100,6 +106,7 @@ public class IndicatorResource {
         return indicator;
     }
 
+    @PreAuthorize("hasPermission(#indicatorId, 'indicator')")
     @RequestMapping(value = "{indicatorId}", method = RequestMethod.DELETE, produces = "application/json")
     public void deleteIndicator(
             @PathVariable("indicatorId") int indicatorId,
@@ -121,6 +128,7 @@ public class IndicatorResource {
 
     @RequestMapping(method = RequestMethod.POST, produces = "application/json")
     public Indicator createIndicator(
+        @Valid
         @RequestBody
         Indicator indicator,
         HttpServletResponse response){
@@ -131,11 +139,6 @@ public class IndicatorResource {
             response.setStatus(HttpServletResponse.SC_CREATED);
             return indicator;
         }
-        catch (ConstraintViolationException e){
-            LOGGER.info("INFO: Invalid indicator's data.");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return null;
-        }
         catch (Exception e) {
             LOGGER.info("INFO: Internal error");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -143,9 +146,11 @@ public class IndicatorResource {
         }
     }
 
+    @PreAuthorize("hasPermission(#indicator.indicatorId, 'indicator')")
     @RequestMapping(value = "{indicatorId}", method = RequestMethod.PUT, produces = "application/json")
     public Indicator updateIndicator(
         @PathVariable("indicatorId") int indicatorId,
+        @Valid
         @RequestBody
         Indicator indicator,
         HttpServletResponse response){
@@ -160,11 +165,6 @@ public class IndicatorResource {
             LOGGER.info("INFO: Indicator with id " + indicatorId + " has been successfully updated.");
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             return indicator;
-        }
-        catch (ConstraintViolationException e){
-            LOGGER.info("INFO: Invalid indicator's data.");
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return null;
         }
         catch (Exception e) {
             LOGGER.info("INFO: Internal error");
